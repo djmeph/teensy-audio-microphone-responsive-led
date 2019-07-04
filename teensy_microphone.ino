@@ -40,7 +40,7 @@ void loop() {
         leds[i] = CRGB(148,0,211);
         FastLED.show();
       }
-      for (i = NUM_LEDS - peakValue; i < NUM_LEDS; i++) {
+      for (i = peakValue; i < NUM_LEDS; i++) {
         leds[i] = CRGB(0,0,255);
         FastLED.show();
       }
