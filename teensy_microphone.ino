@@ -26,6 +26,7 @@ void setup() {
 }
 
 elapsedMillis fps;
+float monoPeak = 0.0;
 int peakValue = 0;
 int i = 0;
 int gainValue = 0;
@@ -35,20 +36,25 @@ void loop() {
   if (fps > 24) {
     if (peak1.available()) {
       fps = 0;
-      peakValue = peak1.read() * NUM_LEDS;
-      for (i = 0; i < peakValue; i++) {
-        leds[i] = CRGB(148,0,211);
-        FastLED.show();
-      }
-      for (i = peakValue; i < NUM_LEDS; i++) {
-        leds[i] = CRGB(0,0,255);
-        FastLED.show();
-      }
-      newGain = analogRead(ANALOG_IN);
-      if (newGain != gainValue) {
-        gainValue = newGain;
-        sgtl5000_1.micGain(map(gainValue, 0, 1023, 0, 63));
-      }
+      gainControl();
+      peakMeter();
     }
   }
+}
+
+void gainControl() {
+  newGain = map(analogRead(ANALOG_IN), 0, 1023, 0, 63);
+  if (newGain != gainValue) {
+    gainValue = newGain;
+    sgtl5000_1.micGain(gainValue);
+  }
+}
+
+void peakMeter() {
+  monoPeak = peak1.read();
+  peakValue = monoPeak * NUM_LEDS;
+  for (i = 0; i < NUM_LEDS; i++) {
+    leds[i] = i < peakValue ? CRGB(255,20,147) : CRGB(0,0,255);    
+  }
+  FastLED.show();
 }
